@@ -3,8 +3,8 @@ title: "Replication of FT.com plot with ggplot"
 author: "Francesco Bailo"
 date: "`r format(Sys.Date(), '%d %b %Y')`"
 output:
-md_document:
-variant: markdown_github
+  md_document:
+  variant: markdown_github
 ---
 
 ```{r, echo = FALSE}

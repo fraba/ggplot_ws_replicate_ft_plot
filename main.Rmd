@@ -7,7 +7,7 @@ output:
     variant: markdown_github
 ---
 
-```{r}
+```{r, echo = FALSE}
 knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE)
 ```
 
@@ -18,9 +18,12 @@ The goal of this document is to walk you through the steps needed to replicate t
 
 ![FT.com boxplot](https://raw.githubusercontent.com/fraba/ggplot_ws_replicate_ft_plot/master/figures/fig1.png "Burn-Murdoch's plot")
 
+# Getting the data
+
 Since I couldn't find data on export from regions to the EU, I use instead the 2011 cesus data for qualification.
 
 ```{r, results='hide'}
+
 # Read from csv file
 brexit_results <- 
   read.csv('http://www.electoralcommission.org.uk/__data/assets/file/0014/212135/EU-referendum-result-data.csv')
@@ -42,14 +45,98 @@ plot_data <-
 names(plot_data)[22:23] <- c('census_N', 'census_noedu')
 plot_data$census_noedu <- as.numeric(plot_data$census_noedu)
 plot_data$census_N <- as.numeric(plot_data$census_N)
+
 ```
+
+# Exploring the correlation between the two variables
 
 ```{r exploratory-plot, fig.cap = 'Exploratory plot'}
-plot(plot_data$Leave / plot_data$Valid_Votes, plot_data$census_noedu / plot_data$census_N)
+
+plot(plot_data$census_noedu / plot_data$census_N, plot_data$Leave / plot_data$Valid_Votes)
+
 ```
 
 
+# ggplot: geom_point()
+
+## Base plot
+
+```{r geom-point}
+
+require(ggplot2)
+
+ggplot() +
+  geom_point(
+    data = plot_data, 
+    aes(x=census_noedu/census_N, y=Leave/Valid_Votes)
+             )
 
 
+```
+
+
+## Map census population to point size
+
+```{r geom-point-wt-size-1}
+
+require(ggplot2)
+
+ggplot() +
+  geom_point(
+    data = plot_data, 
+    aes(x=census_noedu/census_N, y=Leave/Valid_Votes), 
+    size=5
+    )
+
+```
+
+```{r geom-point-wt-size-2}
+
+require(ggplot2)
+
+ggplot() +
+  geom_point(
+    data = plot_data, 
+    aes(x=census_noedu/census_N, y=Leave/Valid_Votes, size=sqrt(census_N))
+    )
+
+```
+
+```{r geom-point-wt-size-3}
+
+require(ggplot2)
+
+ggplot() +
+  geom_point(
+    data = plot_data, 
+    aes(x=census_noedu/census_N, y=Leave/Valid_Votes, size=sqrt(census_N)),
+    colour = 'red', alpha = 0.5
+    )
+
+```
+
+## Add regression line
+
+```{r geom-smooth}
+
+require(ggplot2)
+
+ggplot(plot_data, aes(x=census_noedu/census_N, y=Leave/Valid_Votes)) +
+  geom_point(
+    data = plot_data, 
+    aes(size=sqrt(census_N)),
+    colour = 'red', alpha = 0.5
+    ) +
+  geom_smooth(method = 'lm', se = FALSE, linetype = "dotted", colour = 'black', size = 0.7)
+
+```
+
+## Add label to random points
+
+### Select four random observations
+
+```{r}
+sample_rows <- sample(1:nrow(plot_data), 4)
+```
 
 

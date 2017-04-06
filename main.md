@@ -202,6 +202,9 @@ ggplot(plot_data, aes(x=census_noedu/census_N, y=Leave/Valid_Votes)) +
 
 ![](main_files/figure-markdown_github/axis-1.png)
 
+Change theme
+------------
+
 ``` r
 ggplot(plot_data, aes(x=census_noedu/census_N, y=Leave/Valid_Votes)) +
   geom_point(

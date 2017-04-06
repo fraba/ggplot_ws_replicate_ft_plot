@@ -61,8 +61,8 @@ ggplot() +
 
 ![](main_files/figure-markdown_github/geom-point-1.png)
 
-Map area's census population to point size
-------------------------------------------
+Map census population to point size
+-----------------------------------
 
 ``` r
 require(ggplot2)
@@ -101,3 +101,29 @@ ggplot() +
 ```
 
 ![](main_files/figure-markdown_github/geom-point-wt-size-3-1.png)
+
+Add regression line
+-------------------
+
+``` r
+require(ggplot2)
+
+ggplot(plot_data, aes(x=census_noedu/census_N, y=Leave/Valid_Votes)) +
+  geom_point(
+    data = plot_data, 
+    aes(size=sqrt(census_N)),
+    colour = 'red', alpha = 0.5
+    ) +
+  geom_smooth(method = 'lm', se = FALSE, linetype = "dotted", colour = 'black', size = 0.7)
+```
+
+![](main_files/figure-markdown_github/geom-smooth-1.png)
+
+Add label to random points
+--------------------------
+
+### Select four random observations
+
+``` r
+sample_rows <- sample(1:nrow(plot_data), 4)
+```

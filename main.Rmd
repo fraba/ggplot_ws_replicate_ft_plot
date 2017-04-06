@@ -3,8 +3,8 @@ title: "Replication of FT.com plot with ggplot"
 author: "Francesco Bailo"
 date: "`r format(Sys.Date(), '%d %b %Y')`"
 output:
-  md_document:
-    variant: markdown_github
+md_document:
+variant: markdown_github
 ---
 
 ```{r, echo = FALSE}
@@ -69,7 +69,7 @@ ggplot() +
   geom_point(
     data = plot_data, 
     aes(x=census_noedu/census_N, y=Leave/Valid_Votes)
-             )
+  )
 
 
 ```
@@ -86,7 +86,7 @@ ggplot() +
     data = plot_data, 
     aes(x=census_noedu/census_N, y=Leave/Valid_Votes), 
     size=5
-    )
+  )
 
 ```
 
@@ -98,7 +98,7 @@ ggplot() +
   geom_point(
     data = plot_data, 
     aes(x=census_noedu/census_N, y=Leave/Valid_Votes, size=sqrt(census_N))
-    )
+  )
 
 ```
 
@@ -111,7 +111,7 @@ ggplot() +
     data = plot_data, 
     aes(x=census_noedu/census_N, y=Leave/Valid_Votes, size=sqrt(census_N)),
     colour = 'red', alpha = 0.5
-    )
+  )
 
 ```
 
@@ -126,17 +126,124 @@ ggplot(plot_data, aes(x=census_noedu/census_N, y=Leave/Valid_Votes)) +
     data = plot_data, 
     aes(size=sqrt(census_N)),
     colour = 'red', alpha = 0.5
-    ) +
+  ) +
   geom_smooth(method = 'lm', se = FALSE, linetype = "dotted", colour = 'black', size = 0.7)
 
 ```
 
 ## Add label to random points
 
-### Select four random observations
+### Select four observations and add their label
 
-```{r}
-sample_rows <- sample(1:nrow(plot_data), 4)
+```{r geom-text}
+
+rows_to_label <- grepl("^city of london$|^birmingham$|^boston$|^oxford$|^cambridge$", 
+                       plot_data$Area, ignore.case = T)
+
+subset_plot_data <- plot_data[rows_to_label,]
+
+hshift <- 0.04
+vshift <- 0.03
+
+ggplot(plot_data, aes(x=census_noedu/census_N, y=Leave/Valid_Votes)) +
+  geom_point(
+    data = plot_data, 
+    aes(size=sqrt(census_N)),
+    colour = 'red', alpha = 0.5
+  ) +
+  geom_smooth(method = 'lm', se = FALSE, linetype = "dotted", colour = 'black', size = 0.7) +
+  geom_text(data = subset_plot_data, 
+            aes(x=census_noedu/census_N+hshift, y=Leave/Valid_Votes-vshift, label = Area))
+
+
+```
+
+
+### Add the arrows
+
+```{r geom-curve}
+
+ggplot(plot_data, aes(x=census_noedu/census_N, y=Leave/Valid_Votes)) +
+  geom_point(
+    data = plot_data, 
+    aes(size=sqrt(census_N)),
+    colour = 'red', alpha = 0.5
+  ) +
+  geom_smooth(method = 'lm', se = FALSE, linetype = "dotted", colour = 'black', size = 0.7) +
+  geom_text(data = subset_plot_data, 
+            aes(x=census_noedu/census_N+hshift, y=Leave/Valid_Votes-vshift, label = Area)) +
+  geom_curve(data = subset_plot_data, 
+             aes(x=census_noedu/census_N+hshift, 
+                 xend=census_noedu/census_N,
+                 y=Leave/Valid_Votes-(vshift-0.009),
+                 yend=Leave/Valid_Votes),
+             curvature = 0.5, 
+             arrow = arrow(length = unit(0.2,"cm"), type = "closed"),
+             size = 0.8
+             )
+
+```
+
+## Add axis labels and change scales
+
+```{r axis}
+
+require(scales)
+
+ggplot(plot_data, aes(x=census_noedu/census_N, y=Leave/Valid_Votes)) +
+  geom_point(
+    data = plot_data, 
+    aes(size=sqrt(census_N)),
+    colour = 'red', alpha = 0.5
+  ) +
+  geom_smooth(method = 'lm', se = FALSE, linetype = "dotted", colour = 'black', size = 0.7) +
+  geom_text(data = subset_plot_data, 
+            aes(x=census_noedu/census_N+hshift, y=Leave/Valid_Votes-vshift, label = Area)) +
+  geom_curve(data = subset_plot_data, 
+             aes(x=census_noedu/census_N+hshift, 
+                 xend=census_noedu/census_N,
+                 y=Leave/Valid_Votes-(vshift-0.009),
+                 yend=Leave/Valid_Votes),
+             curvature = 0.5, 
+             arrow = arrow(length = unit(0.2,"cm"), type = "closed"),
+             size = 0.8
+             ) +
+  scale_x_continuous(label = percent) +
+  scale_y_continuous(label = percent) +
+  labs(x = 'Residents with no qualification', y = "Voted 'leave'")
+
+```
+
+```{r theme}
+
+ggplot(plot_data, aes(x=census_noedu/census_N, y=Leave/Valid_Votes)) +
+  geom_point(
+    data = plot_data, 
+    aes(size=sqrt(census_N)),
+    colour = 'red', alpha = 0.5
+  ) +
+  geom_smooth(method = 'lm', se = FALSE, linetype = "dotted", colour = 'black', size = 0.7) +
+  geom_text(data = subset_plot_data, 
+            aes(x=census_noedu/census_N+hshift, y=Leave/Valid_Votes-vshift, label = Area)) +
+  geom_curve(data = subset_plot_data, 
+             aes(x=census_noedu/census_N+hshift, 
+                 xend=census_noedu/census_N,
+                 y=Leave/Valid_Votes-(vshift-0.009),
+                 yend=Leave/Valid_Votes),
+             curvature = 0.5, 
+             arrow = arrow(length = unit(0.2,"cm"), type = "closed"),
+             size = 0.8
+             ) +
+  scale_x_continuous(label = percent) +
+  scale_y_continuous(label = percent) +
+  labs(x = 'Residents with no qualification', y = "Voted 'leave'") +
+  theme(
+    panel.background = element_rect(fill = "#F5E8D7"),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.y = element_blank()) +
+  guides(size=FALSE)
+
 ```
 
 

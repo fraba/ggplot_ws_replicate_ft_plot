@@ -5,6 +5,8 @@ The goal of this document is to walk you through the steps needed to replicate t
 
 ![FT.com boxplot](https://raw.githubusercontent.com/fraba/ggplot_ws_replicate_ft_plot/master/figures/fig1.png "Burn-Murdoch's plot")
 
+> NOTE: if you would like to download the the entire R code in a single executable R, you find it [here](https://raw.githubusercontent.com/fraba/ggplot_ws_replicate_ft_plot/master/main.R).
+
 Getting the data
 ================
 
